@@ -1,0 +1,61 @@
+{# core/_footer.html #}
+
+<footer class="bg-dark border-top border-secondary text-light mt-5 py-4">
+  <div class="container">
+
+    <div class="row gy-3">
+
+      <!-- Brand & tagline -->
+      <div class="col-md-4">
+        <h5 class="fw-bold">
+          <i class="fa fa-film text-warning me-2"></i>MovieHub
+        </h5>
+        <p class="text-muted small mb-1">
+          Your gateway to movies — explore, search, review, and build your watchlist.
+        </p>
+        <p class="small text-muted mb-0">
+          Powered by <span class="text-info">TMDb API</span> (unofficial).
+        </p>
+      </div>
+
+      <!-- Quick links -->
+      <div class="col-md-4">
+        <h6 class="text-uppercase small text-warning">Quick Links</h6>
+        <ul class="list-unstyled small">
+          <li><a href="{% url 'core:home' %}" class="text-muted text-decoration-none">Popular</a></li>
+          <li><a href="{% url 'core:top_rated' %}" class="text-muted text-decoration-none">Top Rated</a></li>
+          <li><a href="{% url 'core:upcoming' %}" class="text-muted text-decoration-none">Upcoming</a></li>
+          <li><a href="{% url 'core:genres_list' %}" class="text-muted text-decoration-none">Genres</a></li>
+          <li><a href="{% url 'core:search' %}" class="text-muted text-decoration-none">Search</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal & contact -->
+      <div class="col-md-4">
+        <h6 class="text-uppercase small text-warning">More</h6>
+        <ul class="list-unstyled small">
+          <li><a href="{% url 'core:about' %}" class="text-muted text-decoration-none">About</a></li>
+          <li><a href="{% url 'core:privacy' %}" class="text-muted text-decoration-none">Privacy Policy</a></li>
+          <li><a href="{% url 'core:terms' %}" class="text-muted text-decoration-none">Terms of Use</a></li>
+          <li><a href="{% url 'core:contact' %}" class="text-muted text-decoration-none">Contact</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <hr class="border-secondary my-3">
+
+    <div class="d-flex justify-content-between">
+      <small class="text-muted">
+        © {{ now|default:2025 }} MovieHub — A learning project.
+      </small>
+
+      <div class="d-flex gap-3">
+        <a href="#" class="text-muted"><i class="fab fa-github"></i></a>
+        <a href="#" class="text-muted"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-muted"><i class="fab fa-twitter"></i></a>
+      </div>
+    </div>
+
+  </div>
+</footer>

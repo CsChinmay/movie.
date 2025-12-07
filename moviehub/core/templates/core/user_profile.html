@@ -1,0 +1,38 @@
+{% extends "core/base.html" %}
+{% block title %}{{ person.name }} — Profile{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  <div class="col-md-4">
+    {% if person.profile_path %}
+      <img src="https://image.tmdb.org/t/p/w500{{ person.profile_path }}"
+           class="img-fluid rounded shadow">
+    {% endif %}
+  </div>
+
+  <div class="col-md-8">
+    <h2 class="text-warning">{{ person.name }}</h2>
+    <p>{{ person.biography|default:"No biography available." }}</p>
+
+    <hr>
+    <h4>Known For</h4>
+
+    <div class="row g-3">
+      {% for c in credits.cast|slice:":12" %}
+      <div class="col-6 col-md-4">
+        <div class="card bg-dark text-light movie-card" onclick="openMovieModal({{ c.id }})">
+          <img src="https://image.tmdb.org/t/p/w342{{ c.poster_path }}" class="movie-img">
+          <div class="card-body text-center">
+            <h6>{{ c.title|default:c.name|truncatechars:20 }}</h6>
+            <small class="text-secondary">{{ c.release_date }}</small>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

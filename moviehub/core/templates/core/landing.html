@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}MovieHub — Discover movies{% endblock %}
+
+{% block content %}
+{% include "core/_hero_banner.html" with featured=featured %}
+
+<div class="container my-5">
+  <div class="row g-4">
+    <div class="col-md-8">
+      <h3>Discover great movies</h3>
+      <p class="text-secondary">Browse popular films, read reviews, and build a watchlist. MovieHub is a demo project using TMDb data to teach full-stack web development.</p>
+
+      <div class="card bg-dark border-secondary p-3 mb-4">
+        <h5>Popular right now</h5>
+        <div class="row g-3 mt-2">
+          {% for m in popular|slice:":8" %}
+            <div class="col-6 col-md-3">
+              <div class="card movie-card" onclick="openMovieModal({{ m.id }})">
+                <img src="https://image.tmdb.org/t/p/w300{{ m.poster_path }}" class="card-img-top" onerror="this.src='/static/core/images/placeholder_movie.png'">
+                <div class="card-body p-2 small">{{ m.title|default:m.name }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="card bg-dark border-secondary p-3">
+        <h5>Why MovieHub?</h5>
+        <ul class="text-secondary small">
+          <li>Learn Django and JS integration</li>
+          <li>TMDb-powered movie data</li>
+          <li>User reviews and watchlist</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-dark border-secondary p-3 mb-3">
+        <h6>Start searching</h6>
+        <form action="{% url 'search' %}">
+          <div class="input-group">
+            <input name="q" class="form-control" placeholder="Search movies or actors">
+            <button class="btn btn-warning">Search</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card bg-dark border-secondary p-3">
+        <h6 class="mb-2">Quick links</h6>
+        <a href="{% url 'core:top_rated' %}" class="d-block small mb-1">Top Rated</a>
+        <a href="{% url 'core:upcoming' %}" class="d-block small mb-1">Upcoming</a>
+        <a href="{% url 'core:genres_list' %}" class="d-block small">Genres</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

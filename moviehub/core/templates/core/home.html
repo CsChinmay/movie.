@@ -1,0 +1,68 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Home — MovieHub{% endblock %}
+
+{% block content %}
+
+{# HERO — uses partial _hero_banner.html (expects `featured`) #}
+{% include "core/_hero_banner.html" with featured=featured %}
+
+<div class="row g-4">
+  <!-- SIDEBAR (filters) -->
+  <aside class="col-lg-3">
+    {% include "core/_sidebar_filters.html" with genres=genres years=years selected_genre=current_genre selected_year=selected_year selected_rating=selected_rating %}
+  </aside>
+
+  <!-- MAIN: movie grid + load more -->
+  <section class="col-lg-9">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h2 class="mb-0">Popular Movies</h2>
+        <small class="text-muted">Trending movies and selected genres.</small>
+      </div>
+
+      <div class="d-flex gap-2 align-items-center">
+        <div class="small text-muted">
+          Showing <strong>{{ movies|length }}</strong>
+          {% if current_genre %} • filtered: <strong>{{ current_genre }}</strong>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {# Grid of movie cards. The partial _movie_cards.html should render only column cards. #}
+    <div id="moviesGrid" class="row g-4" data-page="{{ page|default:1 }}" data-total-pages="{{ total_pages|default:1 }}">
+      {% include "core/_movie_cards.html" %}
+    </div>
+
+    {# Pagination / load more partial (expects it to render #loadMoreBtn) #}
+    <div class="mt-3">
+      {% include "core/_pagination.html" %}
+    </div>
+  </section>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // make sidebar filter buttons behave: reuse _sidebar_filters.html's apply handler if present
+  (function () {
+    // If the sidebar's "Apply" already attached a handler inline, this won't duplicate.
+    // This script ensures a reset of page param when filters change.
+    const applyBtn = document.getElementById('applyFiltersBtn');
+    if (!applyBtn) return;
+    applyBtn.addEventListener('click', function (ev) {
+      // reads selects from the included sidebar partial
+      const params = new URLSearchParams(window.location.search);
+      const g = document.getElementById('filterGenre')?.value || '';
+      const y = document.getElementById('filterYear')?.value || '';
+      const r = document.getElementById('filterRating')?.value || '';
+      if (g) params.set('genre', g); else params.delete('genre');
+      if (y) params.set('year', y); else params.delete('year');
+      if (r) params.set('min_rating', r); else params.delete('min_rating');
+      params.delete('page'); // reset pagination when filters change
+      window.location.search = params.toString();
+    });
+  })();
+</script>
+{% endblock %}

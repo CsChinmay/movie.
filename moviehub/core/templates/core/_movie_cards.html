@@ -1,0 +1,38 @@
+{# core/templates/core/_movie_cards.html #}
+{% load static %}
+
+<div class="row g-3">
+  {% for movie in movies %}
+    <div class="col-6 col-md-3">
+      <div class="card movie-card h-100 position-relative">
+
+        {# clickable link - use numeric id from normalized dict #}
+        {% if movie.id %}
+          <a href="/movie/{{ movie.id }}/" class="stretched-link" aria-label="{{ movie.title|default:'Movie' }}"></a>
+        {% endif %}
+
+        {# poster image: prefer poster_url, then poster_path, else placeholder #}
+        {% if movie.poster_url %}
+          <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title|default:'Poster' }}">
+        {% elif movie.poster_path %}
+          <img src="https://image.tmdb.org/t/p/w342{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title|default:'Poster' }}">
+        {% else %}
+          <img src="{% static 'core/images/placeholder_movie.png' %}" class="card-img-top" alt="No poster available">
+        {% endif %}
+
+        <div class="card-body p-2">
+          <h6 class="card-title mb-1 text-truncate">{{ movie.title|default:"Untitled" }}</h6>
+          <div class="d-flex justify-content-between small text-muted">
+            <span>{{ movie.release_date|default:"" }}</span>
+            <span>{{ movie.vote_average|default:"—" }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info mb-0">No movies to show.</div>
+    </div>
+  {% endfor %}
+</div>

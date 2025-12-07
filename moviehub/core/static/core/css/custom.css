@@ -1,0 +1,313 @@
+/* core/static/core/css/custom.css
+   MovieHub site-wide styles
+   - Dark-first design with optional light mode (add `.light` to <html> or <body> to enable)
+   - Minimal, modern look, built to pair with Bootstrap 5
+*/
+
+/* -----------------------
+   Base colors / variables
+   ----------------------- */
+:root {
+  --bg: #0b0b0b;
+  --card: #0d0d0d;
+  --muted: #9a9a9a;
+  --accent: #ffc107; /* bootstrap warning/yellow */
+  --border: rgba(255,255,255,0.06);
+  --glass: rgba(255,255,255,0.03);
+  --text: #e8e8e8;
+  --success: #28a745;
+  --danger: #dc3545;
+  --info: #0dcaf0;
+  --shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+/* Light theme overrides */
+html.light, body.light {
+  --bg: #f7f7fb;
+  --card: #ffffff;
+  --muted: #6c757d;
+  --accent: #ffb703;
+  --border: rgba(0,0,0,0.06);
+  --glass: rgba(0,0,0,0.03);
+  --text: #111827;
+}
+
+/* -----------------------
+   Global page layout
+   ----------------------- */
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+a { color: var(--accent); }
+a:hover { color: #ffd54a; text-decoration: none; }
+
+/* container tweaks */
+.container, .container-fluid {
+  max-width: 1200px;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: .65rem;
+  color: var(--text);
+}
+
+/* slight card shadow on hover for emphasis */
+.card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-3px);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+/* -----------------------
+   Header / nav
+   ----------------------- */
+.navbar {
+  background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.12));
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar .navbar-brand {
+  color: var(--accent);
+}
+
+.nav-link {
+  color: rgba(255,255,255,0.85) !important;
+}
+.nav-link.active {
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+/* header search styling */
+#navSearchInput {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+#navSearchInput::placeholder { color: var(--muted); }
+
+/* Theme toggle */
+#themeToggle { min-width: 40px; }
+
+/* -----------------------
+   Hero banner
+   ----------------------- */
+.hero-banner {
+  border-radius: .65rem;
+  overflow: hidden;
+  color: white;
+  position: relative;
+}
+.hero-banner .container { position: relative; z-index: 2; }
+.hero-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.9) 100%);
+  z-index: 1;
+}
+
+/* hero image fallback */
+.hero-banner img { border-radius: .5rem; }
+
+/* -----------------------
+   Movie cards / grid
+   ----------------------- */
+.movie-card {
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.movie-card .card-img-top {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+.movie-card .card-body { padding: .5rem .5rem; }
+
+/* rating badge on poster */
+.movie-card .badge {
+  font-size: .78rem;
+  background: rgba(0,0,0,0.6);
+  color: var(--accent);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: .25rem .5rem;
+  border-radius: 6px;
+}
+
+/* quick action buttons on posters */
+.quick-watchlist, .quick-open {
+  border-radius: 8px;
+  padding: .25rem .4rem;
+  margin: .25rem;
+  opacity: .95;
+}
+.quick-watchlist.active-watch {
+  color: var(--danger);
+  background: rgba(255,255,255,0.03);
+  transform: scale(1.02);
+}
+
+/* card meta */
+.card .text-truncate { max-width: 100%; }
+
+/* -----------------------
+   Modal (movie modal)
+   ----------------------- */
+.modal-content {
+  background: linear-gradient(180deg, rgba(10,10,10,0.95), rgba(8,8,8,0.98));
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: .6rem;
+}
+.modal .btn-close-white { filter: invert(1) brightness(1.2); }
+
+/* modal poster */
+.modal-body img { border-radius: 6px; }
+
+/* small responsive tweaks inside modal */
+@media (max-width: 768px) {
+  .modal-dialog.modal-xl { max-width: 92%; margin: 1.5rem; }
+}
+
+/* -----------------------
+   Sidebar filters
+   ----------------------- */
+aside.card {
+  position: sticky;
+  top: 16px;
+}
+
+/* form selects in sidebar */
+#filterGenre, #filterYear, #filterRating {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* apply button */
+#applyFiltersBtn { width: 100%; }
+
+/* -----------------------
+   Search suggestions / typeahead
+   ----------------------- */
+#searchSuggestions {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: .35rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  overflow: auto;
+  max-height: 340px;
+  z-index: 2100;
+}
+#searchSuggestions .list-group-item {
+  background: transparent;
+  border: none;
+  padding: .45rem .6rem;
+}
+#searchSuggestions .list-group-item:hover,
+#searchSuggestions .list-group-item.active {
+  background: rgba(255,255,255,0.02);
+}
+#searchSuggestions img {
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* -----------------------
+   Reviews & forms
+   ----------------------- */
+#reviewsRoot { margin-top: .5rem; }
+
+/* review form */
+#reviewForm textarea { background: transparent; color: var(--text); border: 1px solid var(--border); }
+#reviewForm .btn-primary { background: var(--accent); border-color: transparent; color: #111; }
+
+/* review list */
+.review-item { border-bottom: 1px dashed rgba(255,255,255,0.03); padding: .6rem 0; }
+
+/* -----------------------
+   Watchlist page
+   ----------------------- */
+.watchlist-card img { height: 160px; object-fit: cover; }
+
+/* bulk controls */
+.watchlist-controls { display: flex; gap: .5rem; align-items: center; }
+
+/* -----------------------
+   Footer
+   ----------------------- */
+footer {
+  color: var(--muted);
+  background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12));
+  border-top: 1px solid var(--border);
+}
+
+/* small screens: footer columns stack */
+@media (max-width: 576px) {
+  footer .row { text-align: center; }
+}
+
+/* -----------------------
+   Utility helpers & animations
+   ----------------------- */
+.fade-in {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.fade-in.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* subtle image hover */
+.card-img-top { transition: transform .18s ease; }
+.card:hover .card-img-top { transform: scale(1.02); }
+
+/* small responsive adjustments */
+@media (max-width: 768px) {
+  .movie-card .card-img-top { height: 220px; }
+}
+@media (max-width: 480px) {
+  .movie-card .card-img-top { height: 180px; }
+}
+
+/* -----------------------
+   Accessibility / focus states
+   ----------------------- */
+a:focus, button:focus, input:focus, select:focus {
+  outline: 2px solid rgba(255,193,7,0.12);
+  outline-offset: 2px;
+}
+
+/* -----------------------
+   Tiny helpers for placeholders
+   ----------------------- */
+.placeholder-movie {
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.01) 50%, rgba(255,255,255,0.02) 75%);
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+
+/* -----------------------
+   Print & small utilities
+   ----------------------- */
+@media print {
+  body { color: #000; background: #fff; }
+  .navbar, footer, .btn { display: none !important; }
+}

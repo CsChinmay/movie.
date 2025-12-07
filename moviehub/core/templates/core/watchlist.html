@@ -1,0 +1,40 @@
+{% extends "core/base.html" %}
+{% block title %}Watchlist — MovieHub{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Your Watchlist</h2>
+
+{% if user.is_authenticated %}
+  {% if items %}
+    <div class="row g-4">
+      {% for item in items %}
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2 watchlist-card">
+          <div class="card h-100">
+            <img
+              src="https://image.tmdb.org/t/p/w300{{ item.poster_path }}"
+              class="card-img-top"
+              onerror="this.src='/static/core/images/placeholder_movie.png'">
+            <div class="card-body">
+              <div class="small fw-bold">{{ item.title }}</div>
+            </div>
+            <div class="card-footer text-center">
+              <button
+                class="btn btn-sm btn-outline-danger remove-watch-btn"
+                data-id="{{ item.id }}"
+                data-movie-id="{{ item.tmdb_id }}">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No movies in your watchlist yet.</p>
+  {% endif %}
+
+{% else %}
+  <p class="text-muted">Login to view your watchlist.</p>
+{% endif %}
+
+{% endblock %}

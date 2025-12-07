@@ -1,0 +1,37 @@
+<!-- core/_reviews.html -->
+
+<div id="reviewsRoot" data-tmdb-id="{{ tmdb_id }}">
+
+  <h5 class="mb-3">Reviews</h5>
+
+  {% if avg_rating %}
+    <div class="mb-2 text-warning">
+      ⭐ Average Rating: {{ avg_rating|floatformat:1 }}
+    </div>
+  {% endif %}
+
+  {% if reviews %}
+    {% for r in reviews %}
+      <div class="review-item">
+        <div class="fw-bold">{{ r.user.username }}</div>
+        <div class="text-muted small">{{ r.created_at }}</div>
+        <p class="mb-1">{{ r.text }}</p>
+
+        {% if r.rating %}
+          <div class="text-warning small">Rating: {{ r.rating }} ★</div>
+        {% endif %}
+
+        {% if request.user == r.user %}
+          <button class="btn btn-sm btn-outline-danger mt-2 btn-delete-review" data-id="{{ r.id }}">
+            Delete
+          </button>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="text-muted small">No reviews yet.</div>
+  {% endif %}
+
+  {% include "core/_review_form.html" %}
+
+</div>

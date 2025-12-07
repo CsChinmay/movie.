@@ -1,0 +1,11 @@
+<!-- core/_alerts.html -->
+{% if messages %}
+  <div>
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags }} alert-dismissible fade show" role="alert">
+        {{ m }}
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

@@ -1,0 +1,35 @@
+{% extends "core/base.html" %}
+{% block title %}My Profile — MovieHub{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="card bg-dark border-secondary p-3">
+      <h4>{{ user.username }}</h4>
+      <p class="small text-muted mb-1">{{ user.email }}</p>
+      <p class="small text-muted">Member since {{ user.date_joined|date:"M Y" }}</p>
+      <hr class="border-secondary">
+      <a href="{% url 'core:my_watchlist' %}" class="btn btn-sm btn-outline-warning w-100 mb-2">My Watchlist</a>
+      <a href="{% url 'core:logout' %}" class="btn btn-sm btn-outline-light w-100">Logout</a>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card bg-dark border-secondary p-3">
+      <h5>Recent activity</h5>
+      {% if recent_reviews %}
+        <ul class="list-unstyled small">
+          {% for r in recent_reviews %}
+            <li class="mb-2">
+              <strong>{{ r.movie_title }}</strong> — <span class="text-muted">{{ r.created_at|timesince }} ago</span><br>
+              <small class="text-secondary">{{ r.body|truncatechars:150 }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="text-muted">No recent activity.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

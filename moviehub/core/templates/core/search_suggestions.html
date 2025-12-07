@@ -1,0 +1,15 @@
+{# search_suggestions.html - dropdown items for typeahead #}
+<ul id="searchSuggestions" class="list-group position-absolute w-100" style="z-index:1050; display:none;">
+  {% for s in suggestions %}
+    <li class="list-group-item list-group-item-dark d-flex align-items-center suggestion-item" data-id="{{ s.id }}" data-type="{{ s.type }}" style="cursor:pointer;">
+      <img src="{% if s.poster_path %}https://image.tmdb.org/t/p/w92{{ s.poster_path }}{% else %}/static/core/images/placeholder_movie.png{% endif %}" style="height:48px;width:36px;object-fit:cover;border-radius:6px;margin-right:8px;" onerror="this.src='/static/core/images/placeholder_movie.png'">
+      <div class="flex-grow-1">
+        <div class="small">{{ s.title|default:s.name }}</div>
+        <div class="small text-muted">{{ s.type|default:"movie" }}</div>
+      </div>
+    </li>
+  {% endfor %}
+  {% if suggestions|length == 0 %}
+    <li class="list-group-item list-group-item-dark small text-muted">No suggestions</li>
+  {% endif %}
+</ul>

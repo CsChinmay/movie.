@@ -1,0 +1,23 @@
+{# _hero_banner.html #}
+{% if featured %}
+  <section class="hero-banner mb-4" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://image.tmdb.org/t/p/original{{ featured.backdrop_path }}'); background-size:cover; background-position:center;">
+    <div class="container py-5">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-white">
+          <h1 class="display-6 fw-bold mb-2">{{ featured.title }}</h1>
+          {% if featured.tagline %}
+            <p class="text-muted fst-italic">{{ featured.tagline }}</p>
+          {% endif %}
+          <p class="lead text-light">{{ featured.overview|truncatechars:180 }}</p>
+          <div class="mt-3">
+            <button class="btn btn-warning" onclick="openMovieModal({{ featured.id }})">Watch details</button>
+            <a class="btn btn-outline-light ms-2" href="{% url 'core:movie_detail' featured.id %}">Full page</a>
+          </div>
+        </div>
+        <div class="col-md-4 d-none d-md-block">
+          <img src="https://image.tmdb.org/t/p/w500{{ featured.poster_path }}" class="img-fluid rounded shadow" alt="{{ featured.title }}" onerror="this.src='/static/core/images/placeholder_movie.png'">
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}

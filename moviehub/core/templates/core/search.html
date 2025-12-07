@@ -1,0 +1,62 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Search: {{ query }} — MovieHub{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">Search Results</h2>
+    {% if query %}
+      <small class="text-muted">Showing results for "<strong>{{ query }}</strong>"</small>
+    {% else %}
+      <small class="text-muted">Enter a movie name above</small>
+    {% endif %}
+  </div>
+
+  {% if query %}
+  <form method="get" action="{% url 'search' %}" class="d-flex gap-2">
+    <input name="q" class="form-control form-control-sm" placeholder="Search again" value="{{ query }}">
+    
+    <select name="sort" class="form-select form-select-sm">
+      <option value="">Relevance</option>
+      <option value="popularity.desc" {% if sort == "popularity.desc" %}selected{% endif %}>Popularity</option>
+      <option value="vote_average.desc" {% if sort == "vote_average.desc" %}selected{% endif %}>Rating</option>
+      <option value="release_date.desc" {% if sort == "release_date.desc" %}selected{% endif %}>New releases</option>
+    </select>
+
+    <button class="btn btn-sm btn-outline-light">Apply</button>
+  </form>
+  {% endif %}
+</div>
+
+
+{% if query and not movies %}
+<div class="card bg-dark border-secondary p-4">
+  <h5>No results found</h5>
+  <p class="text-secondary">Try checking spelling or searching for another title.</p>
+</div>
+{% endif %}
+
+{% if movies %}
+  <div id="moviesGrid" class="row g-4" data-page="{{ page }}" data-total-pages="{{ total_pages }}">
+    {% include "core/_movie_cards.html" %}
+  </div>
+
+  {% include "core/_pagination.html" %}
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Optional: trigger new search from navbar input without reloading form
+  document.getElementById("navSearchInput")?.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const q = e.target.value.trim();
+      if (q) window.location.href = `/search/?q=${encodeURIComponent(q)}`;
+    }
+  });
+</script>
+{% endblock %}

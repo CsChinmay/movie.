@@ -1,0 +1,102 @@
+<header class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <div class="container-fluid">
+
+    <!-- Logo -->
+    <a class="navbar-brand fw-bold" href="{% url 'core:home' %}">
+      🎬 MovieHub
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+
+      <!-- Left Menu -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+             href="{% url 'core:home' %}">
+            Home
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'top_rated' %}active{% endif %}"
+             href="{% url 'core:top_rated' %}">
+            Top Rated
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'upcoming' %}active{% endif %}"
+             href="{% url 'core:upcoming' %}">
+            Upcoming
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'genres_list' %}active{% endif %}"
+             href="{% url 'core:genres_list' %}">
+            Genres
+          </a>
+        </li>
+
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'watchlist' %}active{% endif %}"
+             href="{% url 'core:watchlist' %}">
+            Watchlist
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+
+      <!-- Search Bar -->
+      <form class="d-flex me-3 position-relative" id="searchForm" autocomplete="off">
+        <input id="searchInput" class="form-control" type="search" placeholder="Search Movies..."
+               aria-label="Search">
+        <div id="searchSuggestions" class="search-suggestions"></div>
+      </form>
+
+      <!-- Right Section (Auth + Theme Switch) -->
+      <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
+
+        <!-- Theme Toggle -->
+        <li class="nav-item me-2">
+          <button id="themeToggle" class="btn btn-outline-light btn-sm">
+            <i id="themeIcon" class="fa fa-moon"></i>
+          </button>
+        </li>
+
+        {% if user.is_authenticated %}
+        <!-- User Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
+             data-bs-toggle="dropdown" aria-expanded="false">
+            👤 {{ user.username }}
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'core:user_profile' user.username %}">My Profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'core:watchlist' %}">Watchlist</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{% url 'core:logout' %}">Logout</a></li>
+          </ul>
+        </li>
+
+        {% else %}
+        <!-- Login / Sign Up -->
+        <li class="nav-item">
+          <a href="{% url 'core:login' %}" class="btn btn-outline-light me-2">Login</a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'core:signup' %}" class="btn btn-warning">Sign Up</a>
+        </li>
+        {% endif %}
+
+      </ul>
+    </div>
+  </div>
+</header>

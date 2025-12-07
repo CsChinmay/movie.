@@ -1,0 +1,147 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Admin Dashboard — MovieHub{% endblock %}
+
+{% block content %}
+<div class="card bg-dark border-secondary p-4">
+  <div class="d-flex align-items-start justify-content-between">
+    <div>
+      <h1 class="mb-1">Admin Control Center</h1>
+      <p class="text-secondary mb-0">A compact dashboard to run maintenance tasks and TMDb sync utilities. These actions should be limited to staff / superusers.</p>
+      <div class="small text-muted mt-2">Use the buttons below to trigger management commands. Output appears in the log area.</div>
+    </div>
+
+    <div class="text-end">
+      <a href="{% url 'admin:index' %}" class="btn btn-sm btn-outline-light mb-2">Open Django Admin</a><br>
+      <a href="{% url 'core:home' %}" class="btn btn-sm btn-outline-secondary">Return to site</a>
+    </div>
+  </div>
+
+  <hr class="border-secondary my-4">
+
+  <!-- Actions -->
+  <div class="row g-3">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card bg-dark border-secondary h-100 p-3">
+        <h5>Sync Genres</h5>
+        <p class="text-secondary small">Fetch TMDb genre list and update local DB.</p>
+        <button id="btnSyncGenres" class="btn btn-warning btn-sm">Run sync_tmdb --genres-only</button>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card bg-dark border-secondary h-100 p-3">
+        <h5>Import Popular Movies</h5>
+        <p class="text-secondary small">Import N pages of popular movies from TMDb (20 movies per page).</p>
+        <div class="d-flex gap-2">
+          <input id="importPages" type="number" min="1" max="50" value="1" class="form-control form-control-sm" style="width:100px;">
+          <button id="btnImportPopular" class="btn btn-warning btn-sm">Import</button>
+        </div>
+        <div class="small text-muted mt-2">Tip: start with 1–2 pages to seed the DB.</div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card bg-dark border-secondary h-100 p-3">
+        <h5>Cache & Cleanup</h5>
+        <p class="text-secondary small">Clear simple caches or temporary data (when implemented).</p>
+        <button id="btnClearCache" class="btn btn-outline-light btn-sm">Clear cache</button>
+        <button id="btnPurgeMovies" class="btn btn-outline-danger btn-sm ms-2">Purge seeded movies</button>
+        <div class="small text-muted mt-2">These are potentially destructive. Use with care.</div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card bg-dark border-secondary p-3">
+        <h5 class="mb-2">One-click Admin Utilities</h5>
+        <div class="d-flex flex-wrap gap-2">
+          <button id="btnRunMigrations" class="btn btn-sm btn-outline-light">Run migrations</button>
+          <button id="btnCreateSuperuser" class="btn btn-sm btn-outline-light">Create superuser (interactive)</button>
+          <button id="btnReindex" class="btn btn-sm btn-outline-light">Reindex search (if enabled)</button>
+        </div>
+        <div class="small text-muted mt-2">Note: some buttons are placeholders — wire them to safe endpoints or background tasks on the server.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Output / Log area -->
+  <hr class="border-secondary my-4">
+  <h5 class="mb-2">Task output & logs</h5>
+  <div id="adminLog" class="bg-black text-light p-3 rounded" style="height:280px; overflow:auto; border:1px solid rgba(255,255,255,0.04);">
+    <div class="small text-muted">No actions run yet.</div>
+  </div>
+
+  <!-- Quick manual command -->
+  <hr class="border-secondary my-3">
+  <h6>Manual command</h6>
+  <form id="manualCommandForm" class="row g-2 align-items-center">
+    <div class="col-auto">
+      <input id="manualCommandInput" class="form-control form-control-sm" placeholder="e.g. sync_tmdb --genres-only" />
+    </div>
+    <div class="col-auto">
+      <button id="btnManualRun" class="btn btn-sm btn-outline-warning">Run</button>
+    </div>
+    <div class="col-12">
+      <div class="small text-muted">Commands run here must be implemented server-side as safe endpoints (POST with CSRF). Do not expose destructive commands without verification.</div>
+    </div>
+  </form>
+
+  <hr class="border-secondary mt-4 mb-3">
+  <div class="small text-muted">Last sync: <span id="lastSync">—</span></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* Small UI-only JS helpers — these are stubs for the eventual AJAX endpoints.
+   They update the log area client-side so you can test UI flow.
+   When you wire server endpoints, replace the fetch() URL and handle CSRF & responses.
+*/
+(function () {
+  const logEl = document.getElementById('adminLog');
+  function log(msg, cls = '') {
+    const t = document.createElement('div');
+    t.className = 'small ' + cls;
+    t.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    if (logEl.firstChild && logEl.firstChild.textContent === 'No actions run yet.') logEl.innerHTML = '';
+    logEl.appendChild(t);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  document.getElementById('btnSyncGenres').addEventListener('click', function () {
+    log('Starting genre sync... (UI stub)');
+    // Example: send POST to /admin/sync-genres/ (to implement)
+    // fetch('/admin/api/sync-genres/', { method:'POST', headers:{'X-CSRFToken': getCookie('csrftoken')} })
+  });
+
+  document.getElementById('btnImportPopular').addEventListener('click', function () {
+    const pages = document.getElementById('importPages').value || 1;
+    log(`Importing popular movies: ${pages} page(s) ... (UI stub)`);
+    // Example: fetch('/admin/api/import-popular/?pages=' + pages, { method: 'POST', ... })
+  });
+
+  document.getElementById('btnClearCache').addEventListener('click', function () {
+    log('Clearing cache... (UI stub)');
+  });
+
+  document.getElementById('btnPurgeMovies').addEventListener('click', function () {
+    if (!confirm('Purge seeded movies from DB? This cannot be undone.')) return;
+    log('Purging seeded movies... (UI stub)');
+  });
+
+  document.getElementById('btnRunMigrations').addEventListener('click', function () {
+    log('Running migrations (UI stub) — server-side command required.');
+  });
+
+  document.getElementById('manualCommandForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    const cmd = document.getElementById('manualCommandInput').value.trim();
+    if (!cmd) return;
+    log(`Running command: ${cmd} (UI stub)`);
+    document.getElementById('manualCommandInput').value = '';
+  });
+
+})();
+</script>
+{% endblock %}

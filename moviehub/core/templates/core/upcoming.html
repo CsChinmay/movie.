@@ -1,0 +1,75 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Upcoming Releases — MovieHub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">Upcoming Releases</h2>
+    <small class="text-muted">See movies releasing soon — keep an eye on new arrivals.</small>
+  </div>
+
+  <div class="d-flex gap-2 align-items-center">
+    <!-- Year filter -->
+    <select id="upcomingYear" class="form-select form-select-sm">
+      <option value="">All years</option>
+      {% for y in years %}
+        <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+      {% endfor %}
+    </select>
+
+    <!-- Month filter -->
+    <select id="upcomingMonth" class="form-select form-select-sm">
+      <option value="">All months</option>
+      {% for num,name in months %}
+        <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+
+    <button id="applyUpcomingFilters" class="btn btn-sm btn-outline-light">Apply</button>
+  </div>
+</div>
+
+{# Optional quick summary top strip #}
+<div class="mb-3">
+  <div class="small text-muted">
+    Showing <strong>{{ movies|length }}</strong> upcoming movies
+    {% if selected_year %} in <strong>{{ selected_year }}</strong>{% endif %}
+    {% if selected_month %} ({{ months|dict_get:selected_month }}){% endif %}.
+  </div>
+</div>
+
+{# Movie grid #}
+<div id="moviesGrid" class="row g-4" data-page="{{ page|default:1 }}" data-total-pages="{{ total_pages|default:1 }}">
+  {% include "core/_movie_cards.html" %}
+</div>
+
+{# Manual pagination / load more partial #}
+{% include "core/_pagination.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Client-side filter handlers (UI-only; expected to call server or reload page with params)
+  (function(){
+    const yearSel = document.getElementById('upcomingYear');
+    const monthSel = document.getElementById('upcomingMonth');
+    const btn = document.getElementById('applyUpcomingFilters');
+
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const y = yearSel.value;
+      const m = monthSel.value;
+      // Simple approach: reload with query params
+      const params = new URLSearchParams(window.location.search);
+      if (y) params.set('year', y); else params.delete('year');
+      if (m) params.set('month', m); else params.delete('month');
+      params.delete('page'); // reset paging
+      window.location.search = params.toString();
+    });
+
+    // If you want to support AJAX-loading filtered pages, change this to fetch the fragment and replace #moviesGrid
+  })();
+</script>
+{% endblock %}

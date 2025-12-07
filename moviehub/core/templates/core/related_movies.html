@@ -1,0 +1,20 @@
+{# related_movies.html - shows similar / recommended movies #}
+<div class="card bg-dark border-secondary p-3 mb-3">
+  <h5 class="mb-2">Related movies</h5>
+  {% if related %}
+    <div class="row g-3">
+      {% for m in related|slice:":8" %}
+        <div class="col-6 col-md-3">
+          <div class="card movie-card" onclick="openMovieModal({{ m.id }})" style="cursor:pointer;">
+            <img src="{% if m.poster_path %}https://image.tmdb.org/t/p/w300{{ m.poster_path }}{% else %}/static/core/images/placeholder_movie.png{% endif %}" class="card-img-top" onerror="this.src='/static/core/images/placeholder_movie.png'">
+            <div class="card-body p-2 small">
+              <div class="text-truncate">{{ m.title|default:m.name }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-muted small">No recommendations available.</div>
+  {% endif %}
+</div>

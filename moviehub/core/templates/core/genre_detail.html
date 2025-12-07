@@ -1,0 +1,35 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}{{ genre_name }} — MovieHub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">{{ genre_name }}</h2>
+    <small class="text-muted">Movies in this genre</small>
+  </div>
+  <div>
+    <a href="{% url 'core:genres_list' %}" class="btn btn-sm btn-outline-light">Back to genres</a>
+  </div>
+</div>
+
+{# optional description if you want to provide copy for a few genres #}
+{% if genre_description %}
+  <div class="card bg-dark border-secondary p-3 mb-3">
+    <div class="text-secondary">{{ genre_description }}</div>
+  </div>
+{% endif %}
+
+<div id="moviesGrid" class="row g-4" data-page="{{ page|default:1 }}" data-total-pages="{{ total_pages|default:1 }}">
+  {% include "core/_movie_cards.html" %}
+</div>
+
+{% include "core/_pagination.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // load more or infinite scroll will use data-page/data-total-pages attributes
+  // you can add simple filter controls here if needed (e.g., sort by popularity)
+</script>
+{% endblock %}

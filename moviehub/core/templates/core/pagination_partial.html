@@ -1,0 +1,7 @@
+<div class="d-flex justify-content-center align-items-center my-3" id="paginationControls">
+  {% if page and total_pages and page < total_pages %}
+    <button id="loadMoreBtn" class="btn btn-outline-warning btn-sm" data-next-page="{{ page|add:1 }}">Load more</button>
+  {% else %}
+    <div class="small text-muted">No more results.</div>
+  {% endif %}
+</div>

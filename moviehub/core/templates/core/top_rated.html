@@ -1,0 +1,62 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Top Rated — MovieHub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">Top Rated Movies</h2>
+    <small class="text-muted">Curated by rating — highest scored films first.</small>
+  </div>
+
+  <div class="d-flex gap-2 align-items-center">
+    <!-- Simple sort / filter controls -->
+    <select id="topRatedSort" class="form-select form-select-sm">
+      <option value="rating_desc" {% if sort == "rating_desc" %}selected{% endif %}>Rating (high → low)</option>
+      <option value="rating_asc" {% if sort == "rating_asc" %}selected{% endif %}>Rating (low → high)</option>
+      <option value="date_desc" {% if sort == "date_desc" %}selected{% endif %}>Release date (new → old)</option>
+      <option value="date_asc" {% if sort == "date_asc" %}selected{% endif %}>Release date (old → new)</option>
+    </select>
+
+    <button id="applyTopRatedSort" class="btn btn-sm btn-outline-light">Apply</button>
+  </div>
+</div>
+
+{# Quick stats / summary #}
+<div class="mb-3">
+  <div class="small text-muted">
+    Showing <strong>{{ movies|length }}</strong> movies
+    {% if total_results %} • total {{ total_results }} results{% endif %}.
+  </div>
+</div>
+
+{# Movie cards grid #}
+<div id="moviesGrid" class="row g-4" data-page="{{ page|default:1 }}" data-total-pages="{{ total_pages|default:1 }}">
+  {% include "core/_movie_cards.html" %}
+</div>
+
+{# Pagination / Load more #}
+{% include "core/_pagination.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function(){
+    const sortSel = document.getElementById('topRatedSort');
+    const btn = document.getElementById('applyTopRatedSort');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const sort = sortSel.value;
+      const params = new URLSearchParams(window.location.search);
+      if (sort) params.set('sort', sort); else params.delete('sort');
+      params.delete('page'); // reset pagination
+      window.location.search = params.toString();
+    });
+
+    // If you later support AJAX sort, replace the reload with a fetch to the server
+    // that returns the movie cards fragment and then update #moviesGrid.innerHTML.
+  })();
+</script>
+{% endblock %}

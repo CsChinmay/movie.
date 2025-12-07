@@ -1,0 +1,38 @@
+<!-- core/_sidebar_filters.html -->
+<div class="card p-3">
+  <h5 class="mb-3">Filters</h5>
+
+  <!-- Genre -->
+  <label class="form-label text-muted small">Genre</label>
+  <select id="filterGenre" class="form-select mb-3">
+    <option value="">All Genres</option>
+    {% for g in genres %}
+      <option value="{{ g.id }}" {% if selected_genre == g.id|stringformat:"s" %}selected{% endif %}>
+        {{ g.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <!-- Year -->
+  <label class="form-label text-muted small">Release Year</label>
+  <select id="filterYear" class="form-select mb-3">
+    <option value="">Any Year</option>
+    {% for y in years %}
+      <option value="{{ y }}" {% if selected_year == y|stringformat:"s" %}selected{% endif %}>
+        {{ y }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <!-- Rating -->
+  <label class="form-label text-muted small">Min Rating</label>
+  <select id="filterRating" class="form-select mb-3">
+    <option value="">Any Rating</option>
+    <option value="5" {% if selected_rating == "5" %}selected{% endif %}>5+</option>
+    <option value="6" {% if selected_rating == "6" %}selected{% endif %}>6+</option>
+    <option value="7" {% if selected_rating == "7" %}selected{% endif %}>7+</option>
+    <option value="8" {% if selected_rating == "8" %}selected{% endif %}>8+</option>
+  </select>
+
+  <button id="applyFiltersBtn" class="btn btn-warning w-100">Apply Filters</button>
+</div>

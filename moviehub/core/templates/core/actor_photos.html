@@ -1,0 +1,19 @@
+{# actor_photos.html - partial for actor/person photos #}
+{% if photos %}
+  <div class="card bg-dark border-secondary p-3 mb-4">
+    <h5 class="mb-3">Photos</h5>
+    <div class="d-flex gap-2 flex-wrap">
+      {% for p in photos %}
+        <div class="photo-thumb" style="width:160px;">
+          <img src="https://image.tmdb.org/t/p/w400{{ p.file_path }}" 
+               class="img-fluid rounded" 
+               alt="photo {{ forloop.counter }}"
+               style="height:110px;object-fit:cover;width:100%;">
+        </div>
+      {% endfor %}
+    </div>
+    {% if photos|length > 8 %}
+      <div class="mt-2 small text-muted">Showing first {{ photos|length|slice:":8"|length }} photos. See more on TMDb.</div>
+    {% endif %}
+  </div>
+{% endif %}

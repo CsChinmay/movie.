@@ -1,0 +1,10 @@
+{% extends "core/base.html" %}
+{% block title %}Page not found — MovieHub{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-5">404</h1>
+  <p class="lead text-muted">We couldn't find the page you're looking for.</p>
+  <a href="{% url 'core:home' %}" class="btn btn-outline-warning">Back to home</a>
+</div>
+{% endblock %}

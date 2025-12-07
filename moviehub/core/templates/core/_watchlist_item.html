@@ -1,0 +1,39 @@
+{# _watchlist_item.html – expects `item` in context #}
+<div class="card movie-card h-100 bg-dark border-secondary">
+  <div class="position-relative">
+    <img src="{{ item.poster_path|default:'/static/core/images/placeholder_movie.png' }}"
+         class="card-img-top"
+         alt="{{ item.title }}"
+         style="height:320px;object-fit:cover;cursor:pointer;"
+         onclick="openMovieModal({{ item.tmdb_id|default:item.id }})"
+         onerror="this.onerror=null;this.src='/static/core/images/placeholder_movie.png'">
+
+    <!-- Selection checkbox -->
+    <div class="position-absolute top-2 start-2">
+      <input type="checkbox" class="watchlist-checkbox" data-id="{{ item.id }}">
+    </div>
+
+    <!-- Quick actions -->
+    <div class="position-absolute top-2 end-2 d-flex gap-1">
+      <!-- Open in new page -->
+      <a href="{% url 'core:movie_detail' item.tmdb_id %}" class="btn btn-sm btn-dark btn-outline-light" title="Open page">
+        <i class="fa fa-external-link-alt"></i>
+      </a>
+
+      <!-- Remove button (AJAX) -->
+      <button class="btn btn-sm btn-dark btn-outline-danger remove-watch-btn" data-id="{{ item.id }}" title="Remove from watchlist">
+        <i class="fa fa-trash"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body p-2 d-flex flex-column">
+    <h6 class="card-title mb-1 text-truncate" title="{{ item.title }}">{{ item.title }}</h6>
+    <div class="mt-auto d-flex justify-content-between align-items-center">
+      <small class="text-muted">{{ item.added_at|date:"M d, Y" }}</small>
+      <button class="btn btn-sm btn-outline-warning watchlist-btn" data-id="{{ item.tmdb_id }}" data-title="{{ item.title }}" data-poster="{{ item.poster_path }}">
+        <i class="fa fa-heart"></i>
+      </button>
+    </div>
+  </div>
+</div>

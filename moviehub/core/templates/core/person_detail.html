@@ -1,0 +1,153 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}{{ person.name }} — Actor — MovieHub{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- LEFT COLUMN: Photo + Basic Info -->
+  <div class="col-lg-4">
+    <div class="card bg-dark border-secondary p-3">
+      <img src="{% if person.profile_path %}https://image.tmdb.org/t/p/w500{{ person.profile_path }}{% else %}/static/core/images/placeholder_person.png{% endif %}"
+           alt="{{ person.name }}"
+           class="img-fluid rounded mb-3"
+           onerror="this.src='/static/core/images/placeholder_person.png'">
+
+      <h2 class="mb-0">{{ person.name }}</h2>
+      {% if person.also_known_as %}
+        <div class="small text-muted">{{ person.also_known_as|first }}</div>
+      {% endif %}
+      {% if person.known_for_department %}
+        <div class="text-warning small mb-2">{{ person.known_for_department }}</div>
+      {% endif %}
+
+      <hr class="border-secondary">
+
+      <div class="small text-muted mb-1"><strong>Born:</strong> {{ person.birthday|default:"Unknown" }}</div>
+      {% if person.place_of_birth %}
+        <div class="small text-muted"><strong>Place:</strong> {{ person.place_of_birth }}</div>
+      {% endif %}
+      {% if person.deathday %}
+        <div class="small text-danger"><strong>Died:</strong> {{ person.deathday }}</div>
+      {% endif %}
+
+      <hr class="border-secondary">
+
+      <!-- Social / External Links -->
+      <div class="d-flex gap-2 flex-wrap">
+        {% if external_ids.imdb_id %}
+          <a class="btn btn-sm btn-outline-light" href="https://www.imdb.com/name/{{ external_ids.imdb_id }}/" target="_blank" rel="noopener">IMDb</a>
+        {% endif %}
+        {% if external_ids.instagram_id %}
+          <a class="btn btn-sm btn-outline-light" href="https://instagram.com/{{ external_ids.instagram_id }}" target="_blank" rel="noopener">Instagram</a>
+        {% endif %}
+        {% if external_ids.twitter_id %}
+          <a class="btn btn-sm btn-outline-light" href="https://twitter.com/{{ external_ids.twitter_id }}" target="_blank" rel="noopener">Twitter</a>
+        {% endif %}
+        {% if external_ids.facebook_id %}
+          <a class="btn btn-sm btn-outline-light" href="https://facebook.com/{{ external_ids.facebook_id }}" target="_blank" rel="noopener">Facebook</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Small stats card -->
+    <div class="card bg-dark border-secondary mt-3 p-3">
+      <h6 class="mb-2">Quick stats</h6>
+      <div class="small text-muted"><strong>Known for:</strong> {{ person.known_for_department|default:"—" }}</div>
+      <div class="small text-muted"><strong>Popularity:</strong> {{ person.popularity|default:"—" }}</div>
+      <div class="small text-muted"><strong>Gender:</strong> {% if person.gender == 1 %}Female{% elif person.gender == 2 %}Male{% else %}—{% endif %}</div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN: Bio, Photos, Known For, Filmography -->
+  <div class="col-lg-8">
+
+    <!-- BIO -->
+    <div class="card bg-dark border-secondary p-4 mb-4">
+      <h3 class="mb-2">Biography</h3>
+      <p class="text-secondary" style="white-space: pre-line;">
+        {{ person.biography|default:"Biography not available." }}
+      </p>
+    </div>
+
+    <!-- PHOTOS (if provided) -->
+    {% if photos and photos|length > 0 %}
+    <div class="card bg-dark border-secondary p-3 mb-4">
+      <h5>Photos</h5>
+      <div class="d-flex gap-2 overflow-auto py-2">
+        {% for p in photos|slice:":12" %}
+          <img src="https://image.tmdb.org/t/p/w300{{ p.file_path }}" alt="photo" class="rounded" style="height:120px;object-fit:cover;" onerror="this.src='/static/core/images/placeholder_person.png'">
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- KNOWN FOR (grid of top works) -->
+    <div class="card bg-dark border-secondary p-3 mb-4">
+      <h5>Known For</h5>
+      {% if known_for %}
+      <div class="row g-3 mt-2">
+        {% for m in known_for %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="card movie-card fade-in" onclick="openMovieModal({{ m.id }})" style="cursor:pointer;">
+              <img src="https://image.tmdb.org/t/p/w300{{ m.poster_path }}" class="card-img-top" onerror="this.src='/static/core/images/placeholder_movie.png'">
+              <div class="card-body p-2">
+                <div class="small text-truncate">{{ m.title|default:m.name }}</div>
+                <div class="small text-muted">{{ m.release_date|default:"" }}</div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <div class="text-muted small">No popular works available.</div>
+      {% endif %}
+    </div>
+
+    <!-- FILMOGRAPHY -->
+    <div class="card bg-dark border-secondary p-3 mb-4">
+      <div class="d-flex justify-content-between">
+        <h5 class="mb-0">Filmography</h5>
+        <div>
+          <button class="btn btn-sm btn-outline-light" data-filter="all" onclick="filterCredits('all')">All</button>
+          <button class="btn btn-sm btn-outline-light" data-filter="cast" onclick="filterCredits('cast')">Acting</button>
+          <button class="btn btn-sm btn-outline-light" data-filter="crew" onclick="filterCredits('crew')">Crew</button>
+        </div>
+      </div>
+
+      {% if filmography %}
+        <ul id="filmographyList" class="list-group list-group-flush bg-dark mt-3">
+          {% for credit in filmography %}
+            <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center credit-row" data-type="{% if credit.job or credit.department %}crew{% else %}cast{% endif %}">
+              <div style="cursor:pointer;" onclick="openMovieModal({{ credit.id }})">
+                <strong class="text-warning">{{ credit.title|default:credit.name }}</strong>
+                <div class="small text-muted">{{ credit.release_date|default:"" }} • {{ credit.character|default:credit.job|default:"" }}</div>
+              </div>
+              <div class="small text-muted">{{ credit.department|default:"" }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="text-muted small mt-2">No filmography available.</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+{% block scripts %}
+<script>
+// client-side filter for filmography (UI-only)
+function filterCredits(kind) {
+  const rows = document.querySelectorAll('#filmographyList .credit-row');
+  rows.forEach(r => {
+    if (kind === 'all') {
+      r.style.display = '';
+    } else {
+      r.style.display = (r.dataset.type === kind) ? '' : 'none';
+    }
+  });
+}
+</script>
+{% endblock %}
+
+{% endblock %}

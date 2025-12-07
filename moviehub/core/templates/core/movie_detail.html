@@ -1,0 +1,152 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}{{ movie.title|default:movie.name }} — MovieHub{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+  <div class="row g-4 align-items-start">
+    <!-- Poster + actions -->
+    <div class="col-lg-4">
+      <div class="card bg-dark border-secondary p-3">
+        <img src="{% if movie.poster_path %}https://image.tmdb.org/t/p/w500{{ movie.poster_path }}{% else %}/static/core/images/placeholder_movie.png{% endif %}"
+             onerror="this.src='/static/core/images/placeholder_movie.png'"
+             class="img-fluid rounded mb-3" alt="{{ movie.title }}">
+
+        <div class="d-flex gap-2 mb-2">
+          {% if user.is_authenticated %}
+            <button id="watchlistBtn" class="btn btn-warning btn-sm w-100 watchlist-btn" data-id="{{ movie.id }}" data-title="{{ movie.title }}" data-poster="{{ movie.poster_path }}">
+              <i class="fa fa-heart me-2"></i> Add to Watchlist
+            </button>
+          {% else %}
+            <a href="{% url 'core:login' %}?next={{ request.path }}" class="btn btn-warning btn-sm w-100">Login to save</a>
+          {% endif %}
+        </div>
+
+        <div class="small text-muted">
+          <strong>Release:</strong> {{ movie.release_date|default:"N/A" }}<br>
+          <strong>Runtime:</strong> {{ movie.runtime|default:"N/A" }} mins<br>
+          <strong>Status:</strong> {{ movie.status|default:"—" }}<br>
+          <strong>Language:</strong> {{ movie.original_language|default:"—" }}
+        </div>
+
+        <hr class="border-secondary my-3">
+
+        <div class="small text-muted">
+          <strong>Genres:</strong>
+          {% if movie.genres %}
+            {% for g in movie.genres %}
+              <a class="text-decoration-none text-light small" href="{% url 'core:genre_detail' g.id %}">{{ g.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          {% else %}
+            —
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Main info -->
+    <div class="col-lg-8">
+      <h1 class="mb-1">{{ movie.title|default:movie.name }}</h1>
+      <div class="small text-muted mb-3">
+        {% if movie.tagline %}<em class="text-secondary">{{ movie.tagline }}</em> — {% endif %}
+        <strong>⭐</strong> {{ movie.vote_average|default:"N/A" }} / 10 • {{ movie.vote_count|default:0 }} votes
+      </div>
+
+      <div class="card bg-dark border-secondary p-3 mb-3">
+        <h5>Overview</h5>
+        <p class="text-secondary" style="white-space:pre-line;">{{ movie.overview|default:"No overview available." }}</p>
+      </div>
+
+      <!-- Trailer -->
+      <div class="card bg-dark border-secondary p-3 mb-3">
+        <h5>Trailer</h5>
+        {% if trailer_key %}
+          <div class="ratio ratio-16x9 mb-2">
+            <iframe src="https://www.youtube.com/embed/{{ trailer_key }}?rel=0&modestbranding=1"
+                    title="Trailer: {{ movie.title }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+          </div>
+          <a class="small text-muted" target="_blank" rel="noopener" href="https://youtube.com/watch?v={{ trailer_key }}">Open on YouTube</a>
+        {% else %}
+          <div class="text-muted small">No trailer available. <a class="small" href="https://www.youtube.com/results?search_query={{ movie.title|urlencode }}+trailer" target="_blank">Search on YouTube</a></div>
+        {% endif %}
+      </div>
+
+      <!-- Cast carousel -->
+      <div class="card bg-dark border-secondary p-3 mb-3">
+        <h5>Cast</h5>
+        {% if cast %}
+          <div id="castCarouselPage" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              {% for member in cast|slice:":12" %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                  <div class="d-flex gap-3 align-items-center p-2">
+                    <img src="{% if member.profile_path %}https://image.tmdb.org/t/p/w185{{ member.profile_path }}{% else %}/static/core/images/placeholder_person.png{% endif %}" style="height:120px;width:90px;object-fit:cover;border-radius:6px;" onerror="this.src='/static/core/images/placeholder_person.png'">
+                    <div>
+                      <strong>{{ member.name }}</strong><br>
+                      <small class="text-muted">{{ member.character }}</small><br>
+                      <a class="small text-info" href="{% url 'core:person_detail' member.id %}">View profile</a>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#castCarouselPage" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#castCarouselPage" data-bs-slide="next">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+        {% else %}
+          <div class="text-muted small">Cast information not available.</div>
+        {% endif %}
+      </div>
+
+      <!-- Reviews (server-rendered partial) -->
+      <div class="card bg-dark border-secondary p-3 mb-3">
+        {% include "core/_reviews.html" with tmdb_id=movie.id reviews=reviews avg_rating=avg_rating %}
+      </div>
+
+      <!-- Similar movies -->
+      <div class="card bg-dark border-secondary p-3">
+        <h5>Similar movies</h5>
+        {% if similar %}
+          <div class="row g-3 mt-2">
+            {% for s in similar|slice:":8" %}
+              <div class="col-6 col-md-3">
+                <div class="card movie-card" onclick="openMovieModal({{ s.id }})" style="cursor:pointer;">
+                  <img src="{% if s.poster_path %}https://image.tmdb.org/t/p/w300{{ s.poster_path }}{% else %}/static/core/images/placeholder_movie.png{% endif %}" class="card-img-top" onerror="this.src='/static/core/images/placeholder_movie.png'">
+                  <div class="card-body p-2">
+                    <div class="small">{{ s.title|default:s.name }}</div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-muted small">No similar movies found.</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // If this page is opened, ensure reviews are up to date; refresh with AJAX if needed
+  (function(){
+    const tmdbId = {{ movie.id }};
+    if (typeof refreshReviews === 'function') {
+      // refreshReviews is provided by custom.js review helpers
+      refreshReviews(tmdbId);
+    }
+  })();
+</script>
+{% endblock %}

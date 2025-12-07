@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% block title %}About — MovieHub{% endblock %}
+
+{% block content %}
+<div class="card bg-dark border-secondary p-4">
+  <h1 class="mb-3">About MovieHub</h1>
+  <p class="lead text-secondary">MovieHub is a demo learning project showing how to build a movie information site using Django and the TMDb API. This site fetches movie data (titles, posters, trailers, cast) from TMDb and stores user-specific data like watchlists and reviews in a local database.</p>
+
+  <h4 class="mt-4">Purpose</h4>
+  <p class="text-secondary">This project is built for learning web development: Django backend, templates, JavaScript interactions (modal, infinite scroll), and simple persistence for user data.</p>
+
+  <h4 class="mt-4">Credits</h4>
+  <ul class="text-secondary">
+    <li>TMDb — The Movie Database (data & images)</li>
+    <li>Bootstrap — UI framework</li>
+    <li>Font Awesome — Icons</li>
+  </ul>
+
+  <h4 class="mt-4">Contact</h4>
+  <p class="text-secondary">For questions or feedback, contact the project owner via the admin account.</p>
+</div>
+{% endblock %}

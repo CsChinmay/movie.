@@ -1,0 +1,23 @@
+<!-- core/_review_form.html -->
+
+<form id="reviewForm" data-tmdb-id="{{ tmdb_id }}" class="mt-3">
+  {% csrf_token %}
+
+  <label class="form-label small">Your Review</label>
+  <textarea
+    name="text"
+    class="form-control mb-2"
+    rows="3"
+    placeholder="Write something..."></textarea>
+
+  <label class="form-label small">Rating</label>
+  <select name="rating" class="form-select mb-3">
+    <option value="">(optional)</option>
+    {% for i in "12345" %}
+      <option value="{{ i }}">{{ i }} ★</option>
+    {% endfor %}
+  </select>
+
+  <button class="btn btn-warning btn-sm">Post Review</button>
+  <div id="reviewFormFeedback" class="small text-danger mt-2 d-none"></div>
+</form>

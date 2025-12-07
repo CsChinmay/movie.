@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Genres — MovieHub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">Genres</h2>
+    <small class="text-muted">Browse by genre to discover movies you love.</small>
+  </div>
+
+  <div class="d-flex gap-2 align-items-center">
+    <form class="d-flex" method="get" action="">
+      <input name="q" class="form-control form-control-sm me-2" placeholder="Search genres..." value="{{ request.GET.q|default:'' }}">
+      <button class="btn btn-sm btn-outline-light">Search</button>
+    </form>
+  </div>
+</div>
+
+<div class="row g-3">
+  {% if genres %}
+    {% for g in genres %}
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+        <a href="{% url 'core:genre_detail' g.id %}" class="card h-100 p-3 text-decoration-none text-light bg-dark border-secondary">
+          <div class="d-flex flex-column align-items-start">
+            <div class="h6 mb-1">{{ g.name }}</div>
+            <div class="small text-muted">{{ g.movie_count|default:"—" }} movies</div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="col-12 text-muted">No genres found.</div>
+  {% endif %}
+</div>
+
+{% endblock %}

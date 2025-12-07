@@ -1,0 +1,94 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="bg-dark text-light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}MovieHub{% endblock %}</title>
+
+  <!-- Bootstrap 5 (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="" crossorigin="anonymous">
+
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="" crossorigin="anonymous"/>
+
+  <!-- Your custom CSS -->
+  <link rel="stylesheet" href="{% static 'core/css/custom.css' %}">
+
+  {% block extra_head %}{% endblock %}
+
+  <style>
+    /* small base tweaks */
+    body { background: #071b4eff; color: #eaeaea; }
+    a { color: #ffc107; }
+    .btn-outline-light { color: #eaeaea; border-color: rgba(255, 255, 255, 1); }
+    .card { background: #3c0c0cff; }
+  </style>
+</head>
+<body>
+
+  <!-- header (nav) -->
+  {% include "core/_header.html" %}
+
+  <!-- alerts/messages -->
+  <div class="container mt-3">
+    {% include "core/_alerts.html" %}
+  </div>
+
+  <!-- main content -->
+  <main class="container my-4">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- footer -->
+  {% include "core/_footer.html" %}
+
+  <!-- Movie modal (single instance) -->
+  {% include "core/_movie_modal.html" %}
+
+  <!-- Core scripts: Bootstrap, libs -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="" crossorigin="anonymous"></script>
+
+  <!-- Provide a small urls map used by client JS.
+       These are simple path strings (no reverse lookup) to avoid template errors
+       if you haven't wired URL names yet. Adjust these paths later if needed. -->
+  <script>
+    window.urls = {
+      suggestions: '/api/suggestions/',        // GET?q=...
+      add_review: '/reviews/add/',            // POST
+      get_reviews: '/reviews/',               // GET /reviews/<tmdb_id>/
+      delete_review: '/reviews/delete/',      // POST /reviews/delete/<id>/
+      toggle_watchlist: '/watchlist/toggle/', // POST (adjust if your path differs)
+      remove_watchlist: '/watchlist/remove/', // POST single remove (adjust name)
+      home: '/',                              // home root
+      movie_detail_base: '/movie/',           // if you use /movie/<id>/
+      person_detail_base: '/person/'          // if you use /person/<id>/
+    };
+
+    // small helper to build some dynamic urls
+    window.urls.getReviewsFor = function(tmdbId) {
+      return window.urls.get_reviews + String(tmdbId) + '/';
+    };
+    window.urls.deleteReviewFor = function(reviewId) {
+      return window.urls.delete_review + String(reviewId) + '/';
+    };
+  </script>
+
+  <!-- Core JS files (custom behavior) -->
+  <script src="{% static 'core/js/custom.js' %}"></script>
+  <script src="{% static 'core/js/search_suggestions.js' %}"></script>
+
+  {% block extra_scripts %}{% endblock %}
+
+  <!-- small snippet: theme initialization (light/dark) if not handled elsewhere -->
+  <script>
+    (function () {
+      try {
+        const saved = localStorage.getItem('moviehub_theme') || 'dark';
+        if (saved === 'light') document.documentElement.classList.add('light');
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+
+</body>
+</html>
